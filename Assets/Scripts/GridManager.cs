@@ -12,14 +12,22 @@ public class GridManager : MonoBehaviour
 
     public Grid<GridCell> Grid => grid;
 
+    private float updateTimer = 0f;
+    private const float UPDATE_INTERVAL = 0.5f;
+
     private void Awake()
     {
-        grid = new Grid<GridCell>(gridSize.x, gridSize.y, cellSize);
+        grid = new Grid<GridCell>(gridSize.x, gridSize.y, cellSize, new Vector3(-100, 0, -100));
     }
 
     private void Update()
     {
-        UpdateTrackedUnits();
+        updateTimer += Time.deltaTime;
+        if (updateTimer >= UPDATE_INTERVAL)
+        {
+            UpdateTrackedUnits();
+            updateTimer = 0f;
+        }
     }
 
     public void RegisterUnit(Unit unit)
@@ -40,14 +48,16 @@ public class GridManager : MonoBehaviour
 
     public void UpdateTrackedUnits()
     {
-        foreach (var kvp in trackedUnitPositions)
-        {
-            Unit unit = kvp.Key;
-            Vector3 lastPos = kvp.Value;
+        // Copy keys to avoid modifying collection during iteration
+        var keys = new List<Unit>(trackedUnitPositions.Keys);
 
+        foreach (var unit in keys)
+        {
             if (unit == null) continue;
 
+            Vector3 lastPos = trackedUnitPositions[unit];
             Vector3 currentPos = unit.transform.position;
+
             if ((currentPos - lastPos).sqrMagnitude > 0.01f)
             {
                 grid.Move(unit, lastPos);

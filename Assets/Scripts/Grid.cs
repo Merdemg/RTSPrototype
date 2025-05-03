@@ -7,6 +7,7 @@ public class Grid<TCell> where TCell : class, new()
     private readonly int width;
     private readonly int height;
     private readonly float cellSize;
+    private readonly Vector3 originPosition;
 
     private readonly TCell[,] cells;
     private readonly Dictionary<TCell, (int x, int y)> cellLookup = new();
@@ -15,11 +16,12 @@ public class Grid<TCell> where TCell : class, new()
     public int Height => height;
     public float CellSize => cellSize;
 
-    public Grid(int width, int height, float cellSize)
+    public Grid(int width, int height, float cellSize, Vector3 originPosition)
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
+        this.originPosition = originPosition;
 
         cells = new TCell[width, height];
 
@@ -108,16 +110,16 @@ public class Grid<TCell> where TCell : class, new()
             }
     }
 
-    public (int x, int y) GetCellCoords(Vector3 worldPos)
+    public (int x, int y) GetCellCoords(Vector3 worldPosition)
     {
-        int x = Mathf.FloorToInt(worldPos.x / cellSize);
-        int y = Mathf.FloorToInt(worldPos.z / cellSize);
+        int x = Mathf.FloorToInt((worldPosition.x - originPosition.x) / cellSize);
+        int y = Mathf.FloorToInt((worldPosition.z - originPosition.z) / cellSize);
         return (x, y);
     }
 
     public Vector3 GetWorldPosition(int x, int y)
     {
-        return new Vector3(x * cellSize, 0, y * cellSize);
+        return new Vector3(x * cellSize, 0, y * cellSize) + originPosition;
     }
 
     public bool InBounds(int x, int y)

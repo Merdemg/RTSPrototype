@@ -883,6 +883,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allUnitConfigs:
   - {fileID: 11400000, guid: c646963a7f4ed0d41a39cab7b7db4166, type: 2}
+  - {fileID: 11400000, guid: 85f5b4e6c89f65245961aecdfbdf0596, type: 2}
+  - {fileID: 11400000, guid: 8912cbbff9e63914183cbc09dcf18a36, type: 2}
+  - {fileID: 11400000, guid: cc3c54d9bc75aeb44a546bbc56655a7e, type: 2}
 --- !u!4 &1585175055
 Transform:
   m_ObjectHideFlags: 0
