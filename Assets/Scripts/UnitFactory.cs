@@ -20,7 +20,7 @@ public class UnitFactory : MonoBehaviour
         }
     }
 
-    public Unit SpawnUnit(UnitType type, Vector3 position, IMovementStrategy movementStrategy)
+    public Unit SpawnUnit(UnitType type, Vector3 position, IMovementStrategy movementStrategy, GridManager gridManager)
     {
         if (!configLookup.TryGetValue(type, out var config))
         {
@@ -39,7 +39,7 @@ public class UnitFactory : MonoBehaviour
 
         Faction faction = (type == UnitType.AntDefender) ? Faction.Player : Faction.Enemy;
 
-        unit.Init(config.stats, faction, movementStrategy);
+        unit.Init(config.stats, faction, movementStrategy, gridManager);
 
         return unit;
     }

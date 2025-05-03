@@ -9,13 +9,13 @@ public enum Faction
 
 public class Unit : MonoBehaviour
 {
-    [SerializeField] private UnitStats stats;
-    [SerializeField] private Faction faction;
-
     public UnitStats Stats => stats;
     public UnitType Type => stats.unitType;
     public int PointValue => stats.pointValue;
     public Faction Faction => faction;
+
+    private UnitStats stats;
+    private Faction faction;
 
     private int currentHealth;
     private int maxHealth;
@@ -27,15 +27,19 @@ public class Unit : MonoBehaviour
 
     private IMovementStrategy movementStrategy;
 
+    private GridManager gridManager;
+
     private void Update()
     {
         movementStrategy?.Move(this);
     }
-    public void Init(UnitStats stats, Faction faction, IMovementStrategy strategy)
+
+    public void Init(UnitStats stats, Faction faction, IMovementStrategy strategy, GridManager gridManager)
     {
         this.stats = stats;
         this.faction = faction;
         movementStrategy = strategy;
+        this.gridManager = gridManager;
 
         maxHealth = Mathf.CeilToInt(stats.maxHealth);
         currentHealth = maxHealth;
@@ -67,7 +71,9 @@ public class Unit : MonoBehaviour
 
     protected virtual void Die()
     {
-        // For now: destroy unit
+        if (gridManager != null)
+            gridManager.UnregisterUnit(this);
+
         Destroy(gameObject);
     }
 }

@@ -13,7 +13,7 @@ public class GameSettings : ScriptableObject
     [Header("Enemy Spawning")]
     public EnemySpawnEntry[] enemySpawnList;
     public float spawnRadius = 3f;
-    public float spawnDelay = 0f;
+    //public float spawnDelay = 0f;
 
     [Header("Difficulty Settings")]
     [Range(0.1f, 3f)] public float enemySpeedMultiplier = 1f;

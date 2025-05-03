@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bc64db7adb90b442ab642b394db23de, type: 3}
+  m_Name: AntDefenderConfig
+  m_EditorClassIdentifier: 
+  unitType: 0
+  stats: {fileID: 11400000, guid: dd41afde4789ce048942770d184197e9, type: 2}
+  prefab: {fileID: 4556746602656435725, guid: c6e998f76a5722e46838c7741cb6f69d, type: 3}

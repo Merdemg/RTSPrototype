@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
             Vector3 position = flagPos + offset;
 
             IMovementStrategy strategy = GetAIMovementStrategy();
-            Unit unit = unitFactory.SpawnUnit(UnitType.AntDefender, position, strategy);
+            Unit unit = unitFactory.SpawnUnit(UnitType.AntDefender, position, strategy, gridManager);
             gridManager.RegisterUnit(unit);
         }
     }
@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
                 Vector3 spawnPos = GetRandomSpawnPosition();
                 IMovementStrategy strategy = new MoveToFlagStrategy(flagTransform);
 
-                Unit unit = unitFactory.SpawnUnit(entry.type, spawnPos, strategy);
+                Unit unit = unitFactory.SpawnUnit(entry.type, spawnPos, strategy, gridManager);
                 unit.ApplyStatModifiers(settings.enemySpeedMultiplier, settings.enemyHealthMultiplier);
                 gridManager.RegisterUnit(unit);
             }
