@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
+
     [Header("Scene References")]
     [SerializeField] private Transform flagTransform;
     [SerializeField] private UnitFactory unitFactory;
@@ -10,6 +12,17 @@ public class GameManager : MonoBehaviour
 
     [Header("Game Settings")]
     [SerializeField] private GameSettings settings;
+    public GameSettings Settings => settings;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // Ensure only one exists
+            return;
+        }
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -64,6 +77,30 @@ public class GameManager : MonoBehaviour
         Vector3 offset = new Vector3(offset2D.x, 0f, offset2D.y);
 
         return anchor.position + offset;
+    }
+
+    public void ApplyCurrentDefenderStrategy()
+    {
+        IMovementStrategy CreateStrategy()
+        {
+            return settings.aiType switch
+            {
+                AIType.PlayerControlled => new PlayerControlledStrategy(),
+                AIType.ClosestEnemy => new ClosestEnemyStrategy(gridManager),
+                AIType.ThreatScoring => new ThreatScoringStrategy(gridManager, flagTransform),
+                _ => new IdleStrategy()
+            };
+        }
+
+        var defenders = PlayerUnitRegistry.Instance.GetDefenders();
+
+        foreach (var unit in defenders)
+        {
+            if (unit.MovementStrategy is System.IDisposable disposable)
+                disposable.Dispose();
+
+            unit.SetMovementStrategy(CreateStrategy());
+        }
     }
 
     private IMovementStrategy GetAIMovementStrategy()

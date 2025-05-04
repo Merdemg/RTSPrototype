@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ded076f56648d9e4aa446910bb846005, type: 3}
-  m_Name: DefaultGameSettingsClosestEnemy
+  m_Name: DefaultGameSettings
   m_EditorClassIdentifier: 
   enemySpawnList:
   - type: 1
@@ -20,9 +20,8 @@ MonoBehaviour:
   - type: 3
     count: 7
   spawnRadius: 3
-  spawnDelay: 0
   enemySpeedMultiplier: 1
   enemyHealthMultiplier: 1
   defenderCount: 5
   defenderSpacing: 4
-  aiType: 1
+  aiType: 0

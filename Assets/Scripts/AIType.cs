@@ -1,7 +1,7 @@
 public enum AIType
 {
-    None,           // No movement / idle
+    PlayerControlled,
     ClosestEnemy,
     ThreatScoring,   // Weighted scoring (distance, speed, etc.)
-    PlayerControlled
+    None           // No movement / idle
 }

@@ -9,19 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ded076f56648d9e4aa446910bb846005, type: 3}
-  m_Name: DefaultGameSettingsPlayerControlled
+  m_Script: {fileID: 11500000, guid: 7ee0b5de53cc7254a94d1a689e4d833d, type: 3}
+  m_Name: DifficultyPresetNormal
   m_EditorClassIdentifier: 
-  enemySpawnList:
-  - type: 1
-    count: 7
-  - type: 2
-    count: 7
-  - type: 3
-    count: 7
-  spawnRadius: 10
-  enemySpeedMultiplier: 1
+  presetName: Normal
   enemyHealthMultiplier: 1
-  defenderCount: 7
-  defenderSpacing: 5
-  aiType: 3
+  enemySpeedMultiplier: 1

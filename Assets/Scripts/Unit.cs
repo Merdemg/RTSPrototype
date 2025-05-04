@@ -25,8 +25,8 @@ public class Unit : MonoBehaviour
     public int MaxHealth => maxHealth;
     public int CurrentHealth => currentHealth;
 
+    public IMovementStrategy MovementStrategy => movementStrategy;
     private IMovementStrategy movementStrategy;
-
     private GridManager gridManager;
 
     private float attackCooldown = 0f;
@@ -35,6 +35,9 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
+        if (GameStateManager.Instance.GameOver)
+            return;
+
         movementStrategy?.Move(this);
 
         if (attackCooldown > 0f)
@@ -47,12 +50,14 @@ public class Unit : MonoBehaviour
     {
         this.stats = stats;
         this.faction = faction;
-        movementStrategy = strategy;
+        this.movementStrategy = strategy;
         this.gridManager = gridManager;
 
         maxHealth = Mathf.CeilToInt(stats.maxHealth);
         currentHealth = maxHealth;
         effectiveMoveSpeed = stats.moveSpeed;
+
+        UnitEvents.RaiseUnitSpawned(this);
     }
 
     public void SetMovementStrategy(IMovementStrategy strategy)
@@ -100,6 +105,11 @@ public class Unit : MonoBehaviour
 
     protected virtual void Die()
     {
+        UnitEvents.RaiseUnitDied(this);
+
+        if (movementStrategy is System.IDisposable disposable)
+            disposable.Dispose();
+
         if (gridManager != null)
             gridManager.UnregisterUnit(this);
 
