@@ -72,6 +72,7 @@ public class GameManager : MonoBehaviour
         {
             AIType.ClosestEnemy => new ClosestEnemyStrategy(gridManager),
             AIType.ThreatScoring => new ThreatScoringStrategy(gridManager, flagTransform),
+            AIType.PlayerControlled => new PlayerControlledStrategy(),
             AIType.None => new IdleStrategy(),
             _ => new IdleStrategy()
         };

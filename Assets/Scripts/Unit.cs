@@ -105,4 +105,12 @@ public class Unit : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+    public void HandleClick()
+    {
+        if (faction == Faction.Enemy)
+        {
+            UnitEvents.RaiseEnemyUnitClicked(this);
+        }
+    }
 }
