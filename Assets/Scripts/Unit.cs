@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public enum Faction
 {
@@ -9,6 +10,9 @@ public enum Faction
 
 public class Unit : MonoBehaviour
 {
+    [SerializeField] Renderer unitRenderer;
+    Color originalColor;
+
     public UnitStats Stats => stats;
     public UnitType Type => stats.unitType;
     public int PointValue => stats.pointValue;
@@ -33,6 +37,13 @@ public class Unit : MonoBehaviour
 
     public Unit Target { get; private set; }
     public string TargetReason { get; private set; }
+
+    public bool IsDead { get; private set; } = false;
+
+    private void Awake()
+    {
+        originalColor = unitRenderer.material.color;
+    }
 
     private void Update()
     {
@@ -102,7 +113,12 @@ public class Unit : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        if (IsDead) return;
+
         currentHealth -= amount;
+
+        transform.DOPunchScale(Vector3.one * 0.2f, 0.2f, 10, 1f);
+        unitRenderer.material.DOColor(Color.magenta, 0.1f).OnComplete(() => unitRenderer.material.DOColor(originalColor, 0.2f));
 
         if (currentHealth <= 0)
             Die();
@@ -115,15 +131,25 @@ public class Unit : MonoBehaviour
 
     protected virtual void Die() // TODO: Add an object pool?
     {
+        if (IsDead) return;
+
+        IsDead = true;
+
         UnitEvents.RaiseUnitDied(this);
 
         if (movementStrategy is System.IDisposable disposable)
             disposable.Dispose();
 
-        if (gridManager != null)
-            gridManager.UnregisterUnit(this);
+        gridManager?.UnregisterUnit(this);
 
-        Destroy(gameObject);
+        var colliders = GetComponentsInChildren<Collider>();
+        foreach (var col in colliders)
+            col.enabled = false;
+
+        transform
+        .DOScale(Vector3.zero, 0.3f)
+        .SetEase(Ease.InBack)
+        .OnComplete(() => Destroy(gameObject));
     }
 
     public void HandleClick()

@@ -118,7 +118,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4647754948721466794, guid: 44d67d6de246240478d695d6bb53d1d5, type: 3}
       propertyPath: m_Name
-      value: LadyBug Variant
+      value: LadyBug - Unit Variant
       objectReference: {fileID: 0}
     - target: {fileID: 5275760917549821221, guid: 44d67d6de246240478d695d6bb53d1d5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -160,6 +160,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8329314945291968026, guid: 44d67d6de246240478d695d6bb53d1d5, type: 3}
+      propertyPath: unitRenderer
+      value: 
+      objectReference: {fileID: 7576393949358422890}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
