@@ -82,6 +82,9 @@ public class VanguardStrategy : IMovementStrategy
             // Find cell with most fast enemies
             GridCell bestCell = null;
             int maxCount = 0;
+            float bestDistToFlag = float.MaxValue;
+
+            Vector3 flagWorldPos = GameManager.Instance.FlagPosition;
 
             foreach (var pair in cellGroups)
             {
@@ -89,6 +92,22 @@ public class VanguardStrategy : IMovementStrategy
                 {
                     maxCount = pair.Value.Count;
                     bestCell = pair.Key;
+
+                    var (x, y) = gridManager.Grid.GetCellCoords(bestCell);
+                    Vector3 cellWorldPos = gridManager.Grid.GetWorldPosition(x, y);
+                    bestDistToFlag = Vector3.SqrMagnitude(cellWorldPos - flagWorldPos);
+                }
+                else if (pair.Value.Count == maxCount)
+                {
+                    var (x, y) = gridManager.Grid.GetCellCoords(pair.Key);
+                    Vector3 cellWorldPos = gridManager.Grid.GetWorldPosition(x, y);
+                    float distToFlag = Vector3.SqrMagnitude(cellWorldPos - flagWorldPos);
+
+                    if (distToFlag < bestDistToFlag)
+                    {
+                        bestCell = pair.Key;
+                        bestDistToFlag = distToFlag;
+                    }
                 }
             }
 

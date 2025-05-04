@@ -117,6 +117,14 @@ public class Grid<TCell> where TCell : class, new()
         return (x, y);
     }
 
+    public (int x, int y) GetCellCoords(TCell cell)
+    {
+        if (cellLookup.TryGetValue(cell, out var coords))
+            return coords;
+
+        throw new KeyNotFoundException("Cell not found in grid.");
+    }
+
     public Vector3 GetWorldPosition(int x, int y)
     {
         return new Vector3(x * cellSize, 0, y * cellSize) + originPosition;

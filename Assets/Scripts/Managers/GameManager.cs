@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     private GameSettings settingsInstance;
     public GameSettings Settings => settingsInstance;
 
+    public Vector3 FlagPosition => flagTransform.position;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
