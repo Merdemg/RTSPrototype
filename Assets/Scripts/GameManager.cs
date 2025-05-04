@@ -11,8 +11,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform[] spawnAnchors;
 
     [Header("Game Settings")]
-    [SerializeField] private GameSettings settings;
-    public GameSettings Settings => settings;
+    [SerializeField] private GameSettings settingsAsset;
+
+    private GameSettings settingsInstance;
+    public GameSettings Settings => settingsInstance;
 
     private void Awake()
     {
@@ -22,19 +24,22 @@ public class GameManager : MonoBehaviour
             return;
         }
         Instance = this;
+
+        settingsInstance = Instantiate(settingsAsset);
     }
 
-    private void Start()
+    public void StartGame()
     {
         SpawnPlayerDefenders();
         SpawnEnemies();
+        GameStateManager.Instance.SetState(GameState.Playing);
     }
 
     private void SpawnPlayerDefenders()
     {
         Vector3 flagPos = flagTransform.position;
-        float spacing = settings.defenderSpacing;
-        int count = settings.defenderCount;
+        float spacing = Settings.defenderSpacing;
+        int count = Settings.defenderCount;
 
         for (int i = 0; i < count; i++)
         {
@@ -50,7 +55,7 @@ public class GameManager : MonoBehaviour
 
     private void SpawnEnemies()
     {
-        foreach (var entry in settings.enemySpawnList)
+        foreach (var entry in Settings.enemySpawnList)
         {
             for (int i = 0; i < entry.count; i++)
             {
@@ -58,7 +63,7 @@ public class GameManager : MonoBehaviour
                 IMovementStrategy strategy = new MoveToFlagStrategy(flagTransform);
 
                 Unit unit = unitFactory.SpawnUnit(entry.type, spawnPos, strategy, gridManager);
-                unit.ApplyStatModifiers(settings.enemySpeedMultiplier, settings.enemyHealthMultiplier);
+                unit.ApplyStatModifiers(Settings.enemySpeedMultiplier, Settings.enemyHealthMultiplier);
                 gridManager.RegisterUnit(unit);
             }
         }
@@ -73,7 +78,7 @@ public class GameManager : MonoBehaviour
         }
 
         Transform anchor = spawnAnchors[Random.Range(0, spawnAnchors.Length)];
-        Vector2 offset2D = Random.insideUnitCircle * settings.spawnRadius;
+        Vector2 offset2D = Random.insideUnitCircle * Settings.spawnRadius;
         Vector3 offset = new Vector3(offset2D.x, 0f, offset2D.y);
 
         return anchor.position + offset;
@@ -83,7 +88,7 @@ public class GameManager : MonoBehaviour
     {
         IMovementStrategy CreateStrategy()
         {
-            return settings.aiType switch
+            return Settings.aiType switch
             {
                 AIType.PlayerControlled => new PlayerControlledStrategy(),
                 AIType.ClosestEnemy => new ClosestEnemyStrategy(gridManager),
@@ -105,7 +110,7 @@ public class GameManager : MonoBehaviour
 
     private IMovementStrategy GetAIMovementStrategy()
     {
-        return settings.aiType switch
+        return Settings.aiType switch
         {
             AIType.ClosestEnemy => new ClosestEnemyStrategy(gridManager),
             AIType.ThreatScoring => new ThreatScoringStrategy(gridManager, flagTransform),

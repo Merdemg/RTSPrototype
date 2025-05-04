@@ -8,6 +8,9 @@ public class PlayerInputHandler : MonoBehaviour
 
     public void OnClick(InputAction.CallbackContext context)
     {
+        if (GameStateManager.Instance.CurrentState != GameState.Playing)
+            return;
+
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             return; // Ignore UI clicks
 
@@ -20,6 +23,14 @@ public class PlayerInputHandler : MonoBehaviour
             {
                 unit.HandleClick();
             }
+        }
+    }
+
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            GameStateManager.Instance.TogglePause();
         }
     }
 }

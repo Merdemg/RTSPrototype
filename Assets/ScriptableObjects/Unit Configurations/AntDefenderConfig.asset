@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitType: 0
   stats: {fileID: 11400000, guid: dd41afde4789ce048942770d184197e9, type: 2}
-  prefab: {fileID: 4556746602656435725, guid: c6e998f76a5722e46838c7741cb6f69d, type: 3}
+  prefab: {fileID: 2290036024589878488, guid: bc3dd687be3f91f4c9102a1956f88066, type: 3}

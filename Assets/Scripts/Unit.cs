@@ -35,7 +35,7 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
-        if (GameStateManager.Instance.GameOver)
+        if (GameStateManager.Instance.CurrentState != GameState.Playing)
             return;
 
         movementStrategy?.Move(this);
