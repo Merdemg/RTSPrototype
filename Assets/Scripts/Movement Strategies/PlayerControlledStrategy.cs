@@ -25,7 +25,7 @@ public class PlayerControlledStrategy : IMovementStrategy
             return;
 
         if (unit.Target != currentTarget)
-            unit.SetTarget(currentTarget);
+            unit.SetTarget(currentTarget, "Player click");
 
         Vector3 dir = (currentTarget.transform.position - unit.transform.position).normalized;
         unit.transform.position += dir * unit.MoveSpeed * Time.deltaTime;

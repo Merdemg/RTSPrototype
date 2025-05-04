@@ -12,7 +12,7 @@ public class ClosestEnemyStrategy : IMovementStrategy
     public void Move(Unit unit)
     {
         Unit closestTarget = FindClosestEnemy(unit);
-        unit.SetTarget(closestTarget);
+        unit.SetTarget(closestTarget, "Closest target");
 
         if (closestTarget != null)
         {

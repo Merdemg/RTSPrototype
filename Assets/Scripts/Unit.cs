@@ -32,6 +32,7 @@ public class Unit : MonoBehaviour
     private float attackCooldown = 0f;
 
     public Unit Target { get; private set; }
+    public string TargetReason { get; private set; }
 
     private void Update()
     {
@@ -65,9 +66,13 @@ public class Unit : MonoBehaviour
         movementStrategy = strategy;
     }
 
-    public void SetTarget(Unit target)
+    public void SetTarget(Unit target, string reason = "")
     {
-        Target = target;
+        if (Target != target)
+        {
+            Target = target;
+            TargetReason = reason;
+        }
     }
 
     /// <summary>

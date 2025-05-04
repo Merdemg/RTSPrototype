@@ -14,7 +14,7 @@ public class ThreatScoringStrategy : IMovementStrategy
     public void Move(Unit unit)
     {
         Unit bestTarget = FindHighestThreatToFlag(unit);
-        unit.SetTarget(bestTarget);
+        unit.SetTarget(bestTarget, "Highest threat");
 
         if (bestTarget != null)
         {
