@@ -35,6 +35,13 @@ public class GameManager : MonoBehaviour
         GameStateManager.Instance.SetState(GameState.Playing);
     }
 
+    public void RestartGame()
+    {
+        UnitRegistry.Instance.DestroyAll();
+        ScoreManager.Instance.ResetStats();
+        GameStateManager.Instance.SetState(GameState.MainMenu);
+    }
+
     private void SpawnPlayerDefenders()
     {
         Vector3 flagPos = flagTransform.position;
@@ -97,7 +104,7 @@ public class GameManager : MonoBehaviour
             };
         }
 
-        var defenders = PlayerUnitRegistry.Instance.GetDefenders();
+        var defenders = UnitRegistry.Instance.GetDefenders();
 
         foreach (var unit in defenders)
         {

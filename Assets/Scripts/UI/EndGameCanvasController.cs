@@ -21,6 +21,11 @@ public class EndGameCanvasController : MonoBehaviour
         ScoreManager.OnEnemyStatsChanged -= UpdateEnemiesEliminated;
     }
 
+    public void OnRestartButtonClicked()
+    {
+        GameManager.Instance.RestartGame();
+    }
+
     private void HandleStateChanged(GameState state)
     {
         endGameCanvas.enabled = state == GameState.Won || state == GameState.Lost;

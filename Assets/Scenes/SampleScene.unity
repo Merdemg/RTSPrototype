@@ -459,7 +459,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 87072136}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 28522118}
+        m_TargetAssemblyTypeName: EndGameCanvasController, Assembly-CSharp
+        m_MethodName: OnRestartButtonClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &87072136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3330,7 +3342,7 @@ GameObject:
   - component: {fileID: 869813146}
   - component: {fileID: 869813147}
   m_Layer: 0
-  m_Name: PlayerUnitRegistry
+  m_Name: UnitRegistry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4706,7 +4718,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1192054540}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 28522118}
+        m_TargetAssemblyTypeName: EndGameCanvasController, Assembly-CSharp
+        m_MethodName: OnRestartButtonClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1192054540
 MonoBehaviour:
   m_ObjectHideFlags: 0

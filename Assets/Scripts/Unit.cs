@@ -103,7 +103,12 @@ public class Unit : MonoBehaviour
             Die();
     }
 
-    protected virtual void Die()
+    public void ForceCleanup()
+    {
+        Die();
+    }
+
+    protected virtual void Die() // TODO: Add an object pool?
     {
         UnitEvents.RaiseUnitDied(this);
 
