@@ -19,9 +19,9 @@ MonoBehaviour:
     count: 7
   - type: 3
     count: 7
-  spawnRadius: 3
+  spawnRadius: 10
   enemySpeedMultiplier: 1
   enemyHealthMultiplier: 1
-  defenderCount: 5
-  defenderSpacing: 4
+  defenderCount: 7
+  defenderSpacing: 5
   aiType: 2

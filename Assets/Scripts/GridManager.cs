@@ -6,6 +6,7 @@ public class GridManager : MonoBehaviour
     [Header("Grid Settings")]
     [SerializeField] private Vector2Int gridSize = new Vector2Int(20, 20);
     [SerializeField] private float cellSize = 2f;
+    [SerializeField] Vector3 gridOriginPoint = new Vector3(-100, 0, -100);
 
     private Grid<GridCell> grid;
     private readonly Dictionary<Unit, Vector3> trackedUnitPositions = new();
@@ -17,7 +18,7 @@ public class GridManager : MonoBehaviour
 
     private void Awake()
     {
-        grid = new Grid<GridCell>(gridSize.x, gridSize.y, cellSize, new Vector3(-100, 0, -100));
+        grid = new Grid<GridCell>(gridSize.x, gridSize.y, cellSize, gridOriginPoint);
     }
 
     private void Update()

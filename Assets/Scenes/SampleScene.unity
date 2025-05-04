@@ -190,7 +190,7 @@ MonoBehaviour:
   - {fileID: 296996613}
   - {fileID: 1983149924}
   - {fileID: 620827443}
-  settings: {fileID: 11400000, guid: 069cdef337dfab64fb3a86ef9c2c1823, type: 2}
+  settings: {fileID: 11400000, guid: 4a7adf7aca2ba8641bdbbdecb704b55d, type: 2}
 --- !u!4 &133951846
 Transform:
   m_ObjectHideFlags: 0
@@ -661,7 +661,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d7748259693a41429cffd368a4d3d3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridSize: {x: 200, y: 200}
+  gridSize: {x: 20, y: 20}
   cellSize: 10
 --- !u!1 &832575517
 GameObject:
