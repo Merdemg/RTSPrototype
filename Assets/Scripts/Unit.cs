@@ -29,9 +29,18 @@ public class Unit : MonoBehaviour
 
     private GridManager gridManager;
 
+    private float attackCooldown = 0f;
+
+    public Unit Target { get; private set; }
+
     private void Update()
     {
         movementStrategy?.Move(this);
+
+        if (attackCooldown > 0f)
+            attackCooldown -= Time.deltaTime;
+
+        TryAttackTarget();
     }
 
     public void Init(UnitStats stats, Faction faction, IMovementStrategy strategy, GridManager gridManager)
@@ -51,6 +60,11 @@ public class Unit : MonoBehaviour
         movementStrategy = strategy;
     }
 
+    public void SetTarget(Unit target)
+    {
+        Target = target;
+    }
+
     /// <summary>
     /// Only meant to be used in the factory, would fully heal the unit if used for a 'mid game upgrade'
     /// </summary>
@@ -59,6 +73,21 @@ public class Unit : MonoBehaviour
         effectiveMoveSpeed = stats.moveSpeed * speedMultiplier;
         maxHealth = Mathf.CeilToInt(stats.maxHealth * healthMultiplier);
         currentHealth = maxHealth;
+    }
+
+    private void TryAttackTarget()
+    {
+        if (attackCooldown > 0f || Target == null || Target.Faction == this.Faction)
+            return;
+
+        float sqrDist = (Target.transform.position - transform.position).sqrMagnitude;
+        float range = stats.attackRange;
+
+        if (sqrDist <= range * range)
+        {
+            Target.TakeDamage(stats.damage);
+            attackCooldown = stats.attackInterval;
+        }
     }
 
     public void TakeDamage(int amount)

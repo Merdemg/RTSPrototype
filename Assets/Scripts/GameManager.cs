@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
         return settings.aiType switch
         {
             AIType.ClosestEnemy => new ClosestEnemyStrategy(gridManager),
-            AIType.ThreatScoring => new ThreatScoringStrategy(gridManager),
+            AIType.ThreatScoring => new ThreatScoringStrategy(gridManager, flagTransform),
             AIType.None => new IdleStrategy(),
             _ => new IdleStrategy()
         };
