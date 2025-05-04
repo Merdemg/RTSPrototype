@@ -57,7 +57,7 @@ public class ClosestEnemyStrategy : IMovementStrategy
 
                     foreach (var other in cell.Units)
                     {
-                        if (other == null || other == unit || other.Faction == unit.Faction)
+                        if (other == null || other.IsDead || other == unit || other.Faction == unit.Faction)
                             continue;
 
                         float sqrDist = (other.transform.position - unit.transform.position).sqrMagnitude;

@@ -58,7 +58,7 @@ public class ThreatScoringStrategy : IMovementStrategy
 
                     foreach (var other in cell.Units)
                     {
-                        if (other == null || other == requester || other.Faction == requester.Faction)
+                        if (other == null || other.IsDead || other == requester || other.Faction == requester.Faction)
                             continue;
 
                         float speed = other.MoveSpeed;

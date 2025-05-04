@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
             Vector3 offset = new Vector3(offsetX, 0, -1f);
             Vector3 position = flagPos + offset;
 
-            IMovementStrategy strategy = GetAIMovementStrategy();
+            IMovementStrategy strategy = GetAIMovementStrategy(i);
             Unit unit = unitFactory.SpawnUnit(UnitType.AntDefender, position, strategy, gridManager);
             gridManager.RegisterUnit(unit);
         }
@@ -93,35 +93,29 @@ public class GameManager : MonoBehaviour
 
     public void ApplyCurrentDefenderStrategy()
     {
-        IMovementStrategy CreateStrategy()
-        {
-            return Settings.aiType switch
-            {
-                AIType.PlayerControlled => new PlayerControlledStrategy(),
-                AIType.ClosestEnemy => new ClosestEnemyStrategy(gridManager),
-                AIType.ThreatScoring => new ThreatScoringStrategy(gridManager, flagTransform),
-                _ => new IdleStrategy()
-            };
-        }
-
         var defenders = UnitRegistry.Instance.GetDefenders();
 
-        foreach (var unit in defenders)
+        for (int i = 0; i < defenders.Count; i++)
         {
+            var unit = defenders[i];
+
             if (unit.MovementStrategy is System.IDisposable disposable)
                 disposable.Dispose();
 
-            unit.SetMovementStrategy(CreateStrategy());
+            unit.SetMovementStrategy(GetAIMovementStrategy(i));
         }
     }
 
-    private IMovementStrategy GetAIMovementStrategy()
+    private IMovementStrategy GetAIMovementStrategy(int index)
     {
         return Settings.aiType switch
         {
             AIType.ClosestEnemy => new ClosestEnemyStrategy(gridManager),
             AIType.ThreatScoring => new ThreatScoringStrategy(gridManager, flagTransform),
             AIType.PlayerControlled => new PlayerControlledStrategy(),
+            AIType.ErdemsSpecial => index < (Settings.defenderCount + 1) / 2
+                ? new VanguardStrategy(gridManager, UnitRegistry.Instance)
+                : new RearguardStrategy(gridManager, flagTransform),
             AIType.None => new IdleStrategy(),
             _ => new IdleStrategy()
         };

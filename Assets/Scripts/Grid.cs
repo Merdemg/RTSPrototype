@@ -122,6 +122,29 @@ public class Grid<TCell> where TCell : class, new()
         return new Vector3(x * cellSize, 0, y * cellSize) + originPosition;
     }
 
+    public List<TCell> GetCellsInRadius((int x, int y) center, int radius)
+    {
+        var result = new List<TCell>();
+
+        for (int dx = -radius; dx <= radius; dx++)
+        {
+            for (int dy = -radius; dy <= radius; dy++)
+            {
+                int cx = center.x + dx;
+                int cy = center.y + dy;
+
+                if (InBounds(cx, cy))
+                {
+                    TCell cell = cells[cx, cy];
+                    if (cell != null)
+                        result.Add(cell);
+                }
+            }
+        }
+
+        return result;
+    }
+
     public bool InBounds(int x, int y)
     {
         return x >= 0 && y >= 0 && x < width && y < height;
