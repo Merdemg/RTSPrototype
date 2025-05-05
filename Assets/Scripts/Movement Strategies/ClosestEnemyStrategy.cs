@@ -10,15 +10,10 @@ public class ClosestEnemyStrategy : IMovementStrategy
         this.gridManager = gridManager;
     }
 
-    // Not looking for a new target while old one is alive should be ok for this prototype since they all spawn at start,
-    // but for an actual RTS, we would compare any newly spawned, or any new targets emerging from fog of war to old target's distance
     public void Move(Unit unit)
     {
-        if (currentTarget == null || currentTarget.IsDead)
-        {
-            currentTarget = FindClosestEnemy(unit);
-            unit.SetTarget(currentTarget, "Closest target");
-        }
+        currentTarget = FindClosestEnemy(unit);
+        unit.SetTarget(currentTarget, "Closest target");
 
         if (currentTarget != null)
         {

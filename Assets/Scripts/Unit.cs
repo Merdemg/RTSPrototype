@@ -40,6 +40,8 @@ public class Unit : MonoBehaviour
 
     public bool IsDead { get; private set; } = false;
 
+    Vector3 lastPos = Vector3.zero;
+
     private void Awake()
     {
         originalColor = unitRenderer.material.color;
@@ -51,6 +53,8 @@ public class Unit : MonoBehaviour
             return;
 
         movementStrategy?.Move(this);
+        gridManager?.MoveUnit(this, lastPos);
+        lastPos = transform.position;
 
         if (attackCooldown > 0f)
             attackCooldown -= Time.deltaTime;
@@ -64,6 +68,8 @@ public class Unit : MonoBehaviour
         this.faction = faction;
         this.movementStrategy = strategy;
         this.gridManager = gridManager;
+
+        lastPos = transform.position;
 
         maxHealth = Mathf.CeilToInt(stats.maxHealth);
         currentHealth = maxHealth;
