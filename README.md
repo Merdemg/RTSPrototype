@@ -1,47 +1,70 @@
-This project is a prototype tower-defense style game built in Unity 6, focused on expandable architecture, AI movement strategies, and efficient spatial queries via a custom grid system. It was designed to demonstrate scalable, maintainable systems while staying within a ~5-hour scope.
+This project is a prototype tower-defense style game built in Unity 6, focused on expandable architecture, AI movement strategies, and efficient spatial queries via a custom grid system.
+
 Features & Architecture Highlights
 
-    Custom Generic Grid System
-    Efficient spatial indexing using a Grid<TCell> structure with fast unit registration and lookups. Used to reduce unnecessary distance checks during AI decisions.
+Custom Generic Grid System
+  - Generic `Grid<TCell>` with `Add`, `Move`, `Delete`, and fast `GetCellCoords`
+  - Units register/unregister automatically
+  - Used to drastically reduce per-frame distance checks
 
-    Modular AI Strategies (IMovementStrategy)
-    Easily expandable: defenders use pluggable behaviors such as:
+Modular AI Movement Strategies
+  - Implements `IMovementStrategy` for plug-and-play AI behavior
+  - Current strategies:
+	- Closest Enemy
+	- Threat Scoring (ETA and point value)
+	- Rearguard (defend flag radius)
+	- Vanguard (hunt clusters of fastest enemies)
+	- Player Controlled
 
-        Closest Enemy
+ScriptableObject-Driven Config
+  - All unit stats and game settings are externalized via SOs
+  - Includes AI type, spawn config, enemy multipliers, and defender count
 
-        Threat Scoring (ETA + point value)
+Grid-Aware Targeting Logic
+  - AI scans grid cells outward from relevant positions (not entire grid)
+  - Closest/threat assessment done per cell, avoids O(N²) searches
 
-        Rearguard (flag proximity defense)
+Efficient Target Caching
+  - Strategies only look for a new target if the current one is lost or dead
+  - Avoids redundant evaluation every frame
 
-        Vanguard (fastest-enemy cluster response)
+Clean System Separation
+  - `GameManager` handles game flow
+  - `UnitFactory` spawns and initializes units
+  - `UnitRegistry` tracks active units by faction
+  - `HUDController`, `EndGameCanvasController`, and menu logic are modular
 
-        Player Controlled
+Functional UI Layer
+  - Main menu with difficulty & AI type selectors
+  - Pause and restart support
+  - Live score and enemy kill count tracking
+  - Debug panel with per-unit targeting reasons
 
-    ScriptableObject-Driven Config
-    Game settings (AI type, spawn data, difficulty multipliers) and unit stats are fully data-driven for designer flexibility.
+Performance Notes
 
-    Clean Separation of Concerns
-    GameManager orchestrates setup; UnitFactory handles instantiation; each Unit is autonomous and stateless outside its setup.
+- **Grid-based scanning** ensures per-frame cost is closer to `O(U)` than `O(U²)`
+- **GridManager.Move()** is only called when units change cells (not every frame)
+- **All object destruction is done through central registries** for clean resets
 
-    Grid-Aware Movement & Targeting
-    All enemy scanning operations are optimized by expanding outward from key cells (unit’s cell or flag’s cell), avoiding global iteration.
+---
 
-    Target Caching & Cleanup
-    AI strategies cache their current target and only search again when the target is lost or dead — this greatly reduces per-frame overhead.
+If I Had More Time
 
-    Debug & UI Layer
-    The game includes:
+- Add object pooling for enemies/defenders to avoid GC hits
+- Layer in animation events or blend trees for idle/attack cycles
+- Expand player control (e.g. click-to-move defenders, assign priorities)
+- Add pathfinding or cell weight systems for maze-style mechanics
+- Bake in runtime difficulty scaling and wave progression
 
-        Start menu with AI & difficulty selection
+---
 
-        Pause & restart handling
+Summary
 
-        Live debug panel showing targeting reasons
+This project demonstrates:
+- Performance-conscious AI design
+- Expandable and clean Unity architecture
+- Strong usage of Unity 6 systems (Input, SOs, Canvas, events)
+- Real-world decision making for gameplay systems
 
-        End screen with stats
 
- Notes on Optimization
 
-    Strategies scale with O(U) in practical scenarios due to grid optimizations, vs. naïve O(U²).
-
-    All unit-grid syncing is done only when units move — no polling per frame.
