@@ -1,4 +1,4 @@
-This project is a prototype tower-defense style game built in Unity 6, focused on expandable architecture, AI movement strategies, and efficient spatial queries via a custom grid system.
+This project is a prototype RTS / tower-defense style game built in Unity 6, focused on expandable architecture, AI movement strategies, and efficient spatial queries via a custom grid system.
 
 Features & Architecture Highlights
 
@@ -25,7 +25,7 @@ Grid-Aware Targeting Logic
   - Closest/threat assessment done per cell, avoids O(N²) searches
 
 Efficient Target Caching
-  - Strategies only look for a new target if the current one is lost or dead
+  - (Most) Strategies only look for a new target if the current one is lost or dead
   - Avoids redundant evaluation every frame
 
 Clean System Separation
@@ -43,7 +43,7 @@ Functional UI Layer
 Performance Notes
 
 - **Grid-based scanning** ensures per-frame cost is closer to `O(U)` than `O(U²)`
-- **GridManager.Move()** is only called when units change cells (not every frame)
+- **`GridManager.Move()`** is called each frame a unit moves, but internally it only updates the grid if the unit’s cell has actually changed
 - **All object destruction is done through central registries** for clean resets
 
 ---
