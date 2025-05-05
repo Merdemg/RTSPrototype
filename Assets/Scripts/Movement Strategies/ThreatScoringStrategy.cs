@@ -5,20 +5,27 @@ public class ThreatScoringStrategy : IMovementStrategy
     private readonly GridManager gridManager;
     private readonly Transform flagTransform;
 
+    private Unit currentTarget;
+
     public ThreatScoringStrategy(GridManager gridManager, Transform flagTransform)
     {
         this.gridManager = gridManager;
         this.flagTransform = flagTransform;
     }
 
+    // Not looking for a new target while old one is alive should be ok for this prototype since they all spawn at start,
+    // but for an actual RTS, we would compare any newly spawned, or any new targets emerging from fog of war to old target's distance
     public void Move(Unit unit)
     {
-        Unit bestTarget = FindHighestThreatToFlag(unit);
-        unit.SetTarget(bestTarget, "Highest threat");
-
-        if (bestTarget != null)
+        if (currentTarget == null || currentTarget.IsDead)
         {
-            Vector3 dir = (bestTarget.transform.position - unit.transform.position).normalized;
+            currentTarget = FindHighestThreatToFlag(unit);
+            unit.SetTarget(currentTarget, "Highest threat");
+        }
+
+        if (currentTarget != null)
+        {
+            Vector3 dir = (currentTarget.transform.position - unit.transform.position).normalized;
             unit.transform.position += dir * unit.MoveSpeed * Time.deltaTime;
         }
     }

@@ -3,20 +3,26 @@ using UnityEngine;
 public class ClosestEnemyStrategy : IMovementStrategy
 {
     private readonly GridManager gridManager;
+    private Unit currentTarget;
 
     public ClosestEnemyStrategy(GridManager gridManager)
     {
         this.gridManager = gridManager;
     }
 
+    // Not looking for a new target while old one is alive should be ok for this prototype since they all spawn at start,
+    // but for an actual RTS, we would compare any newly spawned, or any new targets emerging from fog of war to old target's distance
     public void Move(Unit unit)
     {
-        Unit closestTarget = FindClosestEnemy(unit);
-        unit.SetTarget(closestTarget, "Closest target");
-
-        if (closestTarget != null)
+        if (currentTarget == null || currentTarget.IsDead)
         {
-            Vector3 dir = (closestTarget.transform.position - unit.transform.position).normalized;
+            currentTarget = FindClosestEnemy(unit);
+            unit.SetTarget(currentTarget, "Closest target");
+        }
+
+        if (currentTarget != null)
+        {
+            Vector3 dir = (currentTarget.transform.position - unit.transform.position).normalized;
             unit.transform.position += dir * unit.MoveSpeed * Time.deltaTime;
         }
     }
