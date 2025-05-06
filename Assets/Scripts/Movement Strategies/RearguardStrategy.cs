@@ -15,7 +15,7 @@ public class RearguardStrategy : IMovementStrategy
     }
 
     /// <summary>
-    /// O(R + T) R is number of cells in range, T is total number of units in range
+    /// O(R x A + T): R: Radius, up to max, A: Avarage num of cells in range w units, T is units in those cells
     /// </summary>
     public void Move(Unit unit)
     {
@@ -27,25 +27,51 @@ public class RearguardStrategy : IMovementStrategy
             currentTarget = null;
             float bestETA = float.MaxValue;
 
-            var flagCoords = gridManager.Grid.GetCellCoords(flagTransform.position);
-            var candidateCells = gridManager.Grid.GetCellsInRadius(flagCoords, SEARCH_RADIUS);
+            Grid<GridCell> grid = gridManager.Grid;
+            var (flagX, flagY) = grid.GetCellCoords(flagTransform.position);
+            int maxRadius = SEARCH_RADIUS;
 
-            foreach (var cell in candidateCells)
+            for (int currentRadius = 0; currentRadius <= maxRadius; currentRadius++)
             {
-                foreach (var other in cell.Units)
+                bool foundAny = false;
+
+                for (int distanceX = -currentRadius; distanceX <= currentRadius; distanceX++)
                 {
-                    if (other == unit || other.Faction == unit.Faction || other.IsDead)
-                        continue;
-
-                    float distToFlag = Vector3.Distance(other.transform.position, flagTransform.position);
-                    float eta = distToFlag / Mathf.Max(other.MoveSpeed, 0.01f);
-
-                    if (eta < bestETA)
+                    for (int distanceY = -currentRadius; distanceY <= currentRadius; distanceY++)
                     {
-                        bestETA = eta;
-                        currentTarget = other;
+                        if (Mathf.Abs(distanceX) != currentRadius && Mathf.Abs(distanceY) != currentRadius)
+                            continue;
+
+                        int cellX = flagX + distanceX;
+                        int cellY = flagY + distanceY;
+
+                        if (!grid.InBounds(cellX, cellY))
+                            continue;
+
+                        GridCell cell = grid.GetCell(cellX, cellY);
+                        if (cell == null)
+                            continue;
+
+                        foreach (var other in cell.Units)
+                        {
+                            if (other == unit || other.Faction == unit.Faction || other.IsDead)
+                                continue;
+
+                            float distToFlag = Vector3.Distance(other.transform.position, flagTransform.position);
+                            float eta = distToFlag / Mathf.Max(other.MoveSpeed, 0.01f);
+
+                            if (eta < bestETA)
+                            {
+                                bestETA = eta;
+                                currentTarget = other;
+                                foundAny = true;
+                            }
+                        }
                     }
                 }
+
+                if (foundAny)
+                    break; // Stop expanding if we found a target in this radius
             }
 
             if (currentTarget != null)
