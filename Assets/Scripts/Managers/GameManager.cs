@@ -116,7 +116,7 @@ public class GameManager : MonoBehaviour
             AIType.ThreatScoring => new ThreatScoringStrategy(gridManager, flagTransform),
             AIType.PlayerControlled => new PlayerControlledStrategy(),
             AIType.ErdemsSpecial => index < (Settings.defenderCount + 1) / 2
-                ? new VanguardStrategy(gridManager, UnitRegistry.Instance)
+                ? new VanguardStrategy(gridManager)
                 : new RearguardStrategy(gridManager, flagTransform),
             AIType.None => new IdleStrategy(),
             _ => new IdleStrategy()

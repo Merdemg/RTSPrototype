@@ -15,7 +15,7 @@ public class VanguardStrategy : IMovementStrategy
     }
 
     /// <summary>
-    /// O(R × P) — R: max radius to find a target, P: perimeter cells per radius
+    /// O(R x P): max radius to find a target, P: number of perimeter cells in that radius
     /// </summary>
     public void Move(Unit unit)
     {
@@ -128,7 +128,7 @@ public class VanguardStrategy : IMovementStrategy
             }
             else
             {
-                unit.SetTarget(null, "No fast enemies found");
+                unit.SetTarget(null, "No enemies found");
             }
         }
 
