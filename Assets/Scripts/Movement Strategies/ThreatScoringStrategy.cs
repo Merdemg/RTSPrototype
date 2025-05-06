@@ -34,35 +34,38 @@ public class ThreatScoringStrategy : IMovementStrategy
     {
         Grid<GridCell> grid = gridManager.Grid;
         Vector3 flagPos = flagTransform.position;
-        var (fx, fy) = grid.GetCellCoords(flagPos);
+        var (flagX, flagY) = grid.GetCellCoords(flagPos);
         int width = grid.Width;
         int height = grid.Height;
 
         Unit bestTarget = null;
         float bestScore = float.MinValue;
-        int maxRadius = Mathf.Max(width, height);
+        int maxRadius = Mathf.Max(width, height); // ensures full map coverage if needed
 
-        for (int r = 0; r < maxRadius; r++)
+        // Expand outward in concentric square shells from the flag
+        for (int currentRadius = 0; currentRadius < maxRadius; currentRadius++)
         {
             bool foundAny = false;
 
-            for (int dx = -r; dx <= r; dx++)
+            for (int distanceX = -currentRadius; distanceX <= currentRadius; distanceX++)
             {
-                for (int dy = -r; dy <= r; dy++)
+                for (int distanceY = -currentRadius; distanceY <= currentRadius; distanceY++)
                 {
-                    if (Mathf.Abs(dx) != r && Mathf.Abs(dy) != r)
+                    // Only check perimeter of current radius
+                    if (Mathf.Abs(distanceX) != currentRadius && Mathf.Abs(distanceY) != currentRadius)
                         continue;
 
-                    int cx = fx + dx;
-                    int cy = fy + dy;
+                    int cellX = flagX + distanceX;
+                    int cellY = flagY + distanceY;
 
-                    if (!grid.InBounds(cx, cy))
+                    if (!grid.InBounds(cellX, cellY))
                         continue;
 
-                    GridCell cell = grid.GetCell(cx, cy);
+                    GridCell cell = grid.GetCell(cellX, cellY);
                     if (cell == null)
                         continue;
 
+                    // Evaluate each enemy unit in the cell
                     foreach (var other in cell.Units)
                     {
                         if (other == null || other.IsDead || other == requester || other.Faction == requester.Faction)
@@ -71,12 +74,14 @@ public class ThreatScoringStrategy : IMovementStrategy
                         float speed = other.MoveSpeed;
                         if (speed <= 0f) continue;
 
+                        // Estimate time to flag and use point value as bonus
                         float distanceToFlag = Vector3.Distance(other.transform.position, flagPos);
                         float timeToFlag = distanceToFlag / speed;
                         float pointBonus = other.PointValue * 3f;
 
                         float score = pointBonus - timeToFlag;
 
+                        // Keep the best scoring target
                         if (score > bestScore)
                         {
                             bestScore = score;
@@ -87,10 +92,12 @@ public class ThreatScoringStrategy : IMovementStrategy
                 }
             }
 
+            // Stop expanding once at least one valid target is found
             if (foundAny)
                 break;
         }
 
         return bestTarget;
     }
+
 }

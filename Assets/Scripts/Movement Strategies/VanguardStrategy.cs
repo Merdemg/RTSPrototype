@@ -17,7 +17,7 @@ public class VanguardStrategy : IMovementStrategy
     }
 
     /// <summary>
-    /// O(N) cost only! (N is number of alive enemies)
+    /// O(N) worst case cost
     /// </summary>
     public void Move(Unit unit)
     {

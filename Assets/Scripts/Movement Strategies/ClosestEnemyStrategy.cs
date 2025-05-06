@@ -25,37 +25,39 @@ public class ClosestEnemyStrategy : IMovementStrategy
     private Unit FindClosestEnemy(Unit unit)
     {
         var grid = gridManager.Grid;
-        var (ux, uy) = grid.GetCellCoords(unit.transform.position);
+        var (unitX, unitY) = grid.GetCellCoords(unit.transform.position);
         int width = grid.Width;
         int height = grid.Height;
 
         Unit closest = null;
         float closestSqrDist = float.MaxValue;
 
-        int maxRadius = Mathf.Max(width, height);
+        int maxRadius = Mathf.Max(width, height); // ensures full grid coverage if needed
 
-        for (int r = 0; r < maxRadius; r++)
+        // Expand outward in concentric square shells from the unit's cell
+        for (int currentRadius = 0; currentRadius < maxRadius; currentRadius++)
         {
             bool foundAny = false;
 
-            for (int dx = -r; dx <= r; dx++)
+            for (int distanceX = -currentRadius; distanceX <= currentRadius; distanceX++)
             {
-                for (int dy = -r; dy <= r; dy++)
+                for (int distanceY = -currentRadius; distanceY <= currentRadius; distanceY++)
                 {
                     // Only check perimeter cells of current radius
-                    if (Mathf.Abs(dx) != r && Mathf.Abs(dy) != r)
+                    if (Mathf.Abs(distanceX) != currentRadius && Mathf.Abs(distanceY) != currentRadius)
                         continue;
 
-                    int cx = ux + dx;
-                    int cy = uy + dy;
+                    int cellX = unitX + distanceX;
+                    int cellY = unitY + distanceY;
 
-                    if (!grid.InBounds(cx, cy))
+                    if (!grid.InBounds(cellX, cellY))
                         continue;
 
-                    GridCell cell = grid.GetCell(cx, cy);
+                    GridCell cell = grid.GetCell(cellX, cellY);
                     if (cell == null)
                         continue;
 
+                    // Evaluate each enemy unit in the cell
                     foreach (var other in cell.Units)
                     {
                         if (other == null || other.IsDead || other == unit || other.Faction == unit.Faction)
@@ -72,10 +74,12 @@ public class ClosestEnemyStrategy : IMovementStrategy
                 }
             }
 
+            // Stop expanding once a valid target is found
             if (foundAny)
                 break;
         }
 
         return closest;
     }
+
 }
