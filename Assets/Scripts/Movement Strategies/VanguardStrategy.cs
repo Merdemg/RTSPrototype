@@ -5,35 +5,37 @@ using UnityEngine;
 public class VanguardStrategy : IMovementStrategy
 {
     private readonly GridManager gridManager;
-    private readonly UnitRegistry unitRegistry;
 
     private Unit currentTarget;
     private GridCell targetCell;
 
-    public VanguardStrategy(GridManager gridManager, UnitRegistry unitRegistry)
+    public VanguardStrategy(GridManager gridManager)
     {
         this.gridManager = gridManager;
-        this.unitRegistry = unitRegistry;
     }
 
     /// <summary>
-    /// O(N) worst case cost
+    /// O(R × P) — R: max radius to find a target, P: perimeter cells per radius
     /// </summary>
     public void Move(Unit unit)
     {
+        var grid = gridManager.Grid;
+        var (unitX, unitY) = grid.GetCellCoords(unit.transform.position);
+
         // Step 1: Clean up current cell if target is gone
         if (currentTarget == null || currentTarget.IsDead)
         {
             currentTarget = null;
 
-            var (ux, uy) = gridManager.Grid.GetCellCoords(unit.transform.position);
-            var currentCell = gridManager.Grid.GetCell(ux, uy);
-
+            // Look in the current cell
+            var currentCell = grid.GetCell(unitX, unitY);
             if (currentCell != null)
             {
                 var localEnemies = currentCell.Units
-                .Where(u => u.Faction != unit.Faction && !u.IsDead).ToList();
+                    .Where(u => u.Faction != unit.Faction && !u.IsDead)
+                    .ToList();
 
+                // If any enemy is in this cell, target the closest one
                 if (localEnemies.Count > 0)
                 {
                     currentTarget = localEnemies
@@ -46,87 +48,91 @@ public class VanguardStrategy : IMovementStrategy
             }
         }
 
-        // Step 2: If still no target, do strategic targeting using registry
+        // Step 2: Expand outward if no target found in own cell
         if (currentTarget == null)
         {
-            var enemies = unitRegistry.GetEnemies().Where(u => !u.IsDead).ToList();
+            int width = grid.Width;
+            int height = grid.Height;
+            int maxRadius = Mathf.Max(width, height);
 
-            if (enemies.Count == 0)
-            {
-                unit.SetTarget(null, "No enemies");
-                return;
-            }
-
-            // Find max speed
-            float maxSpeed = enemies.Max(e => e.MoveSpeed);
-
-            // Group fast enemies by cell
-            var cellGroups = new Dictionary<GridCell, List<Unit>>();
-
-            foreach (var enemy in enemies)
-            {
-                if (Mathf.Abs(enemy.MoveSpeed - maxSpeed) > 0.05f)
-                    continue;
-
-                var (x, y) = gridManager.Grid.GetCellCoords(enemy.transform.position);
-                var cell = gridManager.Grid.GetCell(x, y);
-                if (cell == null)
-                    continue;
-
-                if (!cellGroups.ContainsKey(cell))
-                    cellGroups[cell] = new List<Unit>();
-
-                cellGroups[cell].Add(enemy);
-            }
-
-            // Find cell with most fast enemies
             GridCell bestCell = null;
-            int maxCount = 0;
-            float bestDistToFlag = float.MaxValue;
+            int maxFastCount = 0;
+            float maxEnemySpeedInRange = 0f;
 
-            Vector3 flagWorldPos = GameManager.Instance.FlagPosition;
-
-            foreach (var pair in cellGroups)
+            // Expand outward in square radius
+            for (int currentRadius = 1; currentRadius < maxRadius; currentRadius++)
             {
-                if (pair.Value.Count > maxCount)
-                {
-                    maxCount = pair.Value.Count;
-                    bestCell = pair.Key;
+                List<(GridCell cell, List<Unit> enemies)> candidates = new();
 
-                    var (x, y) = gridManager.Grid.GetCellCoords(bestCell);
-                    Vector3 cellWorldPos = gridManager.Grid.GetWorldPosition(x, y);
-                    bestDistToFlag = Vector3.SqrMagnitude(cellWorldPos - flagWorldPos);
-                }
-                else if (pair.Value.Count == maxCount)
+                // For each perimeter cell at this radius
+                for (int distanceX = -currentRadius; distanceX <= currentRadius; distanceX++)
                 {
-                    var (x, y) = gridManager.Grid.GetCellCoords(pair.Key);
-                    Vector3 cellWorldPos = gridManager.Grid.GetWorldPosition(x, y);
-                    float distToFlag = Vector3.SqrMagnitude(cellWorldPos - flagWorldPos);
-
-                    if (distToFlag < bestDistToFlag)
+                    for (int distanceY = -currentRadius; distanceY <= currentRadius; distanceY++)
                     {
-                        bestCell = pair.Key;
-                        bestDistToFlag = distToFlag;
+                        if (Mathf.Abs(distanceX) != currentRadius && Mathf.Abs(distanceY) != currentRadius)
+                            continue;
+
+                        int cellX = unitX + distanceX;
+                        int cellY = unitY + distanceY;
+
+                        if (!grid.InBounds(cellX, cellY))
+                            continue;
+
+                        var cell = grid.GetCell(cellX, cellY);
+                        if (cell == null) continue;
+
+                        // Get enemies in this cell
+                        var enemies = cell.Units
+                            .Where(u => u.Faction != unit.Faction && !u.IsDead)
+                            .ToList();
+
+                        if (enemies.Count > 0)
+                            candidates.Add((cell, enemies));
                     }
                 }
+
+                // If any enemies found in this radius
+                if (candidates.Count > 0)
+                {
+                    // Determine max speed among all enemies in this ring
+                    maxEnemySpeedInRange = candidates
+                        .SelectMany(c => c.enemies)
+                        .Max(u => u.MoveSpeed);
+
+                    // Select the cell with most fast enemies
+                    foreach (var (cell, enemies) in candidates)
+                    {
+                        int fastCount = enemies.Count(u => Mathf.Abs(u.MoveSpeed - maxEnemySpeedInRange) < 0.05f);
+
+                        if (fastCount > maxFastCount)
+                        {
+                            bestCell = cell;
+                            maxFastCount = fastCount;
+                        }
+                    }
+
+                    break; // Stop expanding — we only use first ring with enemies
+                }
             }
 
+            // Step 3: Pick the closest fast enemy in the best cell
             if (bestCell != null)
             {
-                currentTarget = cellGroups[bestCell]
+                currentTarget = bestCell.Units
+                    .Where(u => u.Faction != unit.Faction && !u.IsDead && Mathf.Abs(u.MoveSpeed - maxEnemySpeedInRange) < 0.05f)
                     .OrderBy(u => Vector3.Distance(unit.transform.position, u.transform.position))
                     .FirstOrDefault();
 
                 targetCell = bestCell;
-                unit.SetTarget(currentTarget, $"Fastest: {maxSpeed:0.##}, in cell: {maxCount}");
+                unit.SetTarget(currentTarget, $"Fast cluster at radius, fastCount: {maxFastCount}");
             }
             else
             {
-                unit.SetTarget(null, "No fast clusters");
+                unit.SetTarget(null, "No fast enemies found");
             }
         }
 
-        // Step 3: Move toward current target
+        // Step 4: Move toward current target
         if (currentTarget != null)
         {
             Vector3 dir = (currentTarget.transform.position - unit.transform.position).normalized;
