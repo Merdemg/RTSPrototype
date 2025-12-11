@@ -1,4 +1,4 @@
-This project is a prototype RTS / tower-defense style game built in Unity 6, focused on expandable architecture, AI movement strategies, and efficient spatial queries via a custom grid system.
+This project is a prototype RTS / tower-defense style game built in Unity 6, focused on expandable architecture, AI threat assessment and movement strategies, and efficient spatial queries via a custom grid system.
 
 Features & Architecture Highlights
 
@@ -7,7 +7,7 @@ Custom Generic Grid System
   - Units register/unregister automatically
   - Used to drastically reduce per-frame distance checks
 
-Modular AI Movement Strategies
+Modular AI Threat Assessment & Movement Strategies
   - Implements `IMovementStrategy` for plug-and-play AI behavior
   - Current strategies:
 	- Closest Enemy
